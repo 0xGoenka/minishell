@@ -6,22 +6,33 @@
 /*   By: eleclet <eleclet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/07 15:38:43 by eleclet           #+#    #+#             */
-/*   Updated: 2016/03/07 19:01:01 by eleclet          ###   ########.fr       */
+/*   Updated: 2016/03/09 21:28:02 by eleclet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	**split_path(void)
+char	**split_path(t_lst *lst)
 {
 	char 		**path;
 	char 		*tmp;
-	extern char **environ;
+	char 		**env;
+	int i;
 
-	tmp = ft_strsub(environ[0], 5, ft_strlen(environ[0]) - 5);
-	path = ft_strsplit(tmp, ':');
-	free(tmp);
-	return (path);
+	i = 0;
+	env = lst_to_tab(lst->next);
+	while (env[i] && ft_strncmp("PATH=", env[i], 5) != 0)
+		i++;
+	if (env[i] && ft_strncmp("PATH=", env[i], 5) == 0)
+	{
+		tmp = ft_strsub(env[i], 5, ft_strlen(env[i]) - 5);
+		path = ft_strsplit(tmp, ':');
+		free(tmp);
+		return (path);
+	}
+	else
+		return (0);
+
 }
 int		is_exec(char **param)
 {
@@ -40,7 +51,6 @@ int		is_exec(char **param)
 		{
 			ft_putstr("shell : permission denied : ");
 			ft_putendl(param[0]);
-
 			return (0);
 		}
 	}
@@ -61,7 +71,13 @@ char	*get_home_dir(void)
 {
 	extern char **environ;
 	char		*homepath;
+	int i;
 
-	homepath = ft_strsub(environ[4], 5, ft_strlen(environ[4]) - 5);
+	homepath = NULL;
+	i = 0;
+	while (environ[i] && ft_strncmp("HOME=", environ[i], 5) != 0)
+		i++;
+	if (environ[i] && ft_strncmp("HOME=", environ[i], 5) == 0)
+		homepath = ft_strsub(environ[i], 5, ft_strlen(environ[i]) - 5);
 	return (homepath);
 }
