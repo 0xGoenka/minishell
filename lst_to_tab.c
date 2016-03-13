@@ -6,7 +6,7 @@
 /*   By: eleclet <eleclet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/09 18:00:58 by eleclet           #+#    #+#             */
-/*   Updated: 2016/03/09 21:27:30 by eleclet          ###   ########.fr       */
+/*   Updated: 2016/03/10 11:32:52 by eleclet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 char	**lst_to_tab(t_lst *lst)
 {
-	int i;
-	char  **ret;
-	t_lst *begin;
+	int		i;
+	char	**ret;
+	t_lst	*begin;
 
 	begin = lst;
 	ret = (char **)malloc(sizeof(char *) * countlst(lst) + 1);
@@ -30,7 +30,8 @@ char	**lst_to_tab(t_lst *lst)
 	ret[countlst(begin)] = NULL;
 	return (ret);
 }
-void 	print_tab(char **tab)
+
+void	print_tab(char **tab)
 {
 	int i;
 

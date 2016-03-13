@@ -6,7 +6,7 @@
 /*   By: eleclet <eleclet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/07 15:38:43 by eleclet           #+#    #+#             */
-/*   Updated: 2016/03/09 21:28:02 by eleclet          ###   ########.fr       */
+/*   Updated: 2016/03/10 11:59:15 by eleclet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 char	**split_path(t_lst *lst)
 {
-	char 		**path;
-	char 		*tmp;
-	char 		**env;
-	int i;
+	char		**path;
+	char		*tmp;
+	char		**env;
+	int			i;
 
 	i = 0;
 	env = lst_to_tab(lst->next);
@@ -32,11 +32,10 @@ char	**split_path(t_lst *lst)
 	}
 	else
 		return (0);
-
 }
+
 int		is_exec(char **param)
 {
-
 	if (!ft_strlen(param[0]))
 		return (0);
 	if (param[0][0] == '.' || param[0][0] == '/')
@@ -67,17 +66,38 @@ int		tab_len(char **tab)
 	return (i);
 }
 
-char	*get_home_dir(void)
+char	*get_home_dir(t_lst *lst)
 {
-	extern char **environ;
+	char		**env;
 	char		*homepath;
-	int i;
+	int			i;
 
+	env = lst_to_tab(lst->next);
 	homepath = NULL;
 	i = 0;
-	while (environ[i] && ft_strncmp("HOME=", environ[i], 5) != 0)
+	while (env[i] && ft_strncmp("HOME=", env[i], 5) != 0)
 		i++;
-	if (environ[i] && ft_strncmp("HOME=", environ[i], 5) == 0)
-		homepath = ft_strsub(environ[i], 5, ft_strlen(environ[i]) - 5);
+	if (env[i] && ft_strncmp("HOME=", env[i], 5) == 0)
+		homepath = ft_strsub(env[i], 5, ft_strlen(env[i]) - 5);
 	return (homepath);
+}
+
+int		check(char *line)
+{
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	if (!line)
+		return (0);
+	while (line[i])
+	{
+		if (line[i] == '=')
+			j++;
+		i++;
+	}
+	if (j != 1)
+		return (0);
+	return (1);
 }

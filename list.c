@@ -6,7 +6,7 @@
 /*   By: eleclet <eleclet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/09 13:41:40 by eleclet           #+#    #+#             */
-/*   Updated: 2016/03/09 21:04:28 by eleclet          ###   ########.fr       */
+/*   Updated: 2016/03/13 19:46:44 by eleclet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,25 +82,4 @@ void		lstdel(t_lst *lst)
 		free(tmp);
 		tmp = NULL;
 	}
-}
-
-int			countlst(t_lst *lst)
-{
-	int i;
-
-	i = 0;
-	while (lst->next)
-	{
-		lst = lst->next;
-		i++;
-	}
-	return (i);
-}
-
-void 		print(t_lst *lst)
-{
-	if (!lst)
-		return ;
-	ft_putendl(lst->content);
-	print(lst->next);
 }

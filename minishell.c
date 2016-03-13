@@ -6,27 +6,33 @@
 /*   By: eleclet <eleclet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/07 11:15:13 by eleclet           #+#    #+#             */
-/*   Updated: 2016/03/09 21:22:24 by eleclet          ###   ########.fr       */
+/*   Updated: 2016/03/13 18:50:07 by eleclet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		main()
+int		main(void)
 {
 	char	*in;
-	char	*t_env;
 	t_lst	*lst;
+	char	path[MAXPATHLEN + 1];
+
 	lst = init();
 	fill_lst(lst);
 	while (42)
 	{
-		ft_putstr("<||||||Goku||||||> ");
-		if (get_next_line(0, &in))
+		ft_bzero(path, MAXPATHLEN + 1);
+		getcwd(path, MAXPATHLEN);
+		ft_putstr(path);
+		ft_putstr(" ###> ");
+		if (get_next_line(0, &in) == 1)
 		{
-			if (!ft_strcmp(in, "exit"))
+			if (!controller(in, lst))
+			{
+				lstdel(lst);
 				return (0);
-			controller(in, lst);
+			}
 		}
 	}
 	return (0);
@@ -34,27 +40,32 @@ int		main()
 
 int		controller(char *in, t_lst *lst)
 {
-	char **path;
-	char **param;
+	char	**path;
+	char	**param;
+	int		ret;
+
 	path = split_path(lst);
-	param = ft_strsplit(in, ' ');
+	param = split_advanced(in, ' ', '	');
+	checkhome(param, lst);
 	if (!param[0])
 		return (1);
-	if (builtin(path, param, lst, in))
+	if (!(ret = builtin(param, lst)))
+		return (0);
+	if (ret == 1)
 		return (1);
-	if (basic_exec(param, path, lst))
+	if (basic_exec(param, lst))
 		return (1);
 	if (exec_bin(param, path, lst))
 		return (1);
-	return (0);
+	return (1);
 }
 
-int		basic_exec(char **param, char **path, t_lst *lst)
+int		basic_exec(char **param, t_lst *lst)
 {
-	pid_t pid;
-	int status;
-	int i;
-	char **env;
+	pid_t	pid;
+	int		status;
+	int		i;
+	char	**env;
 
 	i = 0;
 	env = lst_to_tab(lst->next);
@@ -77,17 +88,17 @@ int		basic_exec(char **param, char **path, t_lst *lst)
 
 int		exec_bin(char **param, char **path, t_lst *lst)
 {
-	pid_t pid;
-	int status;
-	int i;
-	char *tmp;
-	char **env;
+	pid_t	pid;
+	int		status;
+	int		i;
+	char	*tmp;
+	char	**env;
 
 	i = 0;
 	env = lst_to_tab(lst->next);
 	while (path && path[i])
 	{
-		tmp = ft_strjoin(path[i],"/");
+		tmp = ft_strjoin(path[i], "/");
 		tmp = ft_strjoin(tmp, param[0]);
 		if (access(tmp, X_OK) == 0)
 		{

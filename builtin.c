@@ -6,27 +6,27 @@
 /*   By: eleclet <eleclet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/07 18:31:46 by eleclet           #+#    #+#             */
-/*   Updated: 2016/03/09 21:10:10 by eleclet          ###   ########.fr       */
+/*   Updated: 2016/03/13 18:50:46 by eleclet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		builtin(char **env, char **param, t_lst *lst, char *in)
+int		builtin(char **param, t_lst *lst)
 {
 	if (ft_strcmp(param[0], "env") == 0)
 	{
-		envcmd(param, lst);
+		envcmd(lst);
 		return (1);
 	}
 	if (ft_strcmp(param[0], "cd") == 0)
 	{
-		cd_cmd(param);
+		cd_cmd(param, lst);
 		return (1);
 	}
 	if (ft_strcmp(param[0], "setenv") == 0)
 	{
-		setenv_cmd(param, lst, in);
+		setenv_cmd(param, lst);
 		return (1);
 	}
 	if (ft_strcmp(param[0], "unsetenv") == 0)
@@ -34,26 +34,34 @@ int		builtin(char **env, char **param, t_lst *lst, char *in)
 		unsetenv_cmd(param, lst);
 		return (1);
 	}
-	return (0);
+	if (ft_strcmp(param[0], "exit") == 0)
+		return (0);
+	return (-1);
 }
 
-int		envcmd(char **param, t_lst *lst)
+int		envcmd(t_lst *lst)
 {
-	char **env;
-	int i;
+	int		i;
 
 	i = 0;
 	print(lst->next);
 	return (1);
 }
-int		setenv_cmd(char **param, t_lst *lst, char *in)
+
+int		setenv_cmd(char **param, t_lst *lst)
 {
 	char **split;
 
-	if (tab_len(param) == 2)
+	if (tab_len(param) == 2 && check(param[1]))
 	{
 		split = ft_strsplit(param[1], '=');
-		add(lst, split[0], param[1]);
+		if (split[0] && param[1][0] != '=')
+			setenv_ext(lst, split[0], param[1]);
+		else
+		{
+			ft_putendl("setenv : usage [setenv var=abcdefgh]");
+			return (1);
+		}
 		free(split);
 	}
 	else
@@ -78,15 +86,15 @@ int		unsetenv_cmd(char **param, t_lst *lst)
 	}
 	return (1);
 }
-int		cd_cmd(char **param)
+
+int		cd_cmd(char **param, t_lst *lst)
 {
-	extern char **environ;
 	char		*pwd;
 
 	if (tab_len(param) == 1)
 	{
-		pwd = get_home_dir();
-		cd_ext(param[1]);
+		pwd = get_home_dir(lst);
+		cd_ext(lst);
 		chdir(pwd);
 		ft_strdel(&pwd);
 	}
@@ -95,7 +103,7 @@ int		cd_cmd(char **param)
 		if (chdir(param[1]) != 0)
 			ft_putendl("cd : no such file or directory");
 		else
-			cd_ext(param[1]);
+			cd_ext(lst);
 	}
 	else
 		ft_putendl("cd : too many arguments.");
